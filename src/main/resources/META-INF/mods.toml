@@ -1,0 +1,28 @@
+modLoader="javafml"
+loaderVersion="[40,)"
+license="LGPL v2.1"
+issueTrackerURL="https://github.com/Viola-Siemens/Initial-House/issues"
+
+[[mods]]
+modId="initial_house"
+version="${file.jarVersion}"
+displayName="Initial House"
+logoFile="logo.png"
+credits="Liu Dongyu"
+authors="Hexagram"
+description='''
+This mod adds a initial house at the spawn point in the overworld.
+'''
+
+[[dependencies.initial_house]]
+    modId="forge"
+    mandatory=true
+    versionRange="[40,)"
+    ordering="NONE"
+    side="BOTH"
+[[dependencies.initial_house]]
+    modId="minecraft"
+    mandatory=true
+    versionRange="[1.18.2,1.19)"
+    ordering="NONE"
+    side="BOTH"
