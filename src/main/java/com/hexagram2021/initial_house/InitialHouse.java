@@ -1,8 +1,18 @@
 package com.hexagram2021.initial_house;
 
-import com.hexagram2021.initial_house.common.IHContent;
-import com.hexagram2021.initial_house.common.config.IHCommonConfig;
+import com.hexagram2021.initial_house.server.IHContent;
+import com.hexagram2021.initial_house.server.config.IHServerConfig;
+import net.minecraft.core.BlockPos;
+import net.minecraft.server.level.ServerLevel;
+import net.minecraft.server.level.ServerPlayer;
+import net.minecraft.world.entity.EntityType;
+import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.block.BedBlock;
+import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.RespawnAnchorBlock;
+import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -14,11 +24,35 @@ public class InitialHouse {
 	public static final String MODID = "initial_house";
 
 	public InitialHouse() {
-		ModLoadingContext.get().registerConfig(ModConfig.Type.COMMON, IHCommonConfig.getConfig());
+		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, IHServerConfig.getConfig());
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
 		IHContent.modConstruct(bus);
 
+		MinecraftForge.EVENT_BUS.addListener(this::onPlayerRespawn);
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	private void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
+		Player player = event.getPlayer();
+		if(player instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
+			ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
+			if(serverPlayer.getRespawnPosition() == null || serverLevel == null || hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
+				BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
+				serverPlayer.teleportTo(sharedSpawnPos.getX() + 0.5D, sharedSpawnPos.getY(), sharedSpawnPos.getZ() + 0.5D);
+			}
+		}
+	}
+
+	private static boolean hasRespawnPosition(ServerLevel serverLevel, BlockPos blockPos) {
+		BlockState blockstate = serverLevel.getBlockState(blockPos);
+		Block block = blockstate.getBlock();
+		if (block instanceof RespawnAnchorBlock && blockstate.getValue(RespawnAnchorBlock.CHARGE) > 0 && RespawnAnchorBlock.canSetSpawn(serverLevel)) {
+			return RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos).isPresent();
+		}
+		if (block instanceof BedBlock && BedBlock.canSetSpawn(serverLevel)) {
+			return BedBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos, 1.0F).isPresent();
+		}
+		return blockstate.getRespawnPosition(EntityType.PLAYER, serverLevel, blockPos, 1.0F, null).isPresent();
 	}
 }

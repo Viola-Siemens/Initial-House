@@ -2,7 +2,7 @@
 @MethodsReturnNonnullByDefault
 @ParametersAreNonnullByDefault
 
-package com.hexagram2021.initial_house.common.config;
+package com.hexagram2021.initial_house.server.config;
 
 import net.minecraft.FieldsAreNonnullByDefault;
 import net.minecraft.MethodsReturnNonnullByDefault;
