@@ -17,6 +17,9 @@ public class IHServerConfig {
 	public static final ForgeConfigSpec.IntValue INITIAL_HOUSE_PIVOT_Z;
 
 	public static final ForgeConfigSpec.BooleanValue DISABLE_SPAWN_POINT_RANDOM_SHIFTING;
+	public static final ForgeConfigSpec.IntValue SPAWN_POINT_SHIFT_X;
+	public static final ForgeConfigSpec.IntValue SPAWN_POINT_SHIFT_Y;
+	public static final ForgeConfigSpec.IntValue SPAWN_POINT_SHIFT_Z;
 
 	static {
 		BUILDER.push("initial_house-server-config");
@@ -30,6 +33,12 @@ public class IHServerConfig {
 					.defineInRange("INITIAL_HOUSE_PIVOT_Z", 4, -255, 255);
 			DISABLE_SPAWN_POINT_RANDOM_SHIFTING = BUILDER.comment("Disable random shifting when player respawn. Setting this value to true makes players spawn at an exact position instead of a random range.")
 					.define("DISABLE_SPAWN_POINT_RANDOM_SHIFTING", false);
+			SPAWN_POINT_SHIFT_X = BUILDER.comment("X-shift of the spawn point. Enabled only if DISABLE_SPAWN_POINT_RANDOM_SHIFTING = true.")
+					.defineInRange("SPAWN_POINT_SHIFT_X", 0, -255, 255);
+			SPAWN_POINT_SHIFT_Y = BUILDER.comment("Y-shift of the spawn point. Enabled only if DISABLE_SPAWN_POINT_RANDOM_SHIFTING = true.")
+					.defineInRange("SPAWN_POINT_SHIFT_Y", 0, -255, 255);
+			SPAWN_POINT_SHIFT_Z = BUILDER.comment("Z-shift of the spawn point. Enabled only if DISABLE_SPAWN_POINT_RANDOM_SHIFTING = true.")
+					.defineInRange("SPAWN_POINT_SHIFT_Z", 0, -255, 255);
 		BUILDER.pop();
 		SPEC = BUILDER.build();
 	}

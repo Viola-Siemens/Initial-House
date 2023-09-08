@@ -58,11 +58,6 @@ public class InitialHouseStructurePieces {
 			return new StructurePlaceSettings()
 					.setRotation(rotation)
 					.setMirror(Mirror.LEFT_RIGHT)
-					.setRotationPivot(new BlockPos(
-							IHServerConfig.INITIAL_HOUSE_PIVOT_X.get(),
-							IHServerConfig.INITIAL_HOUSE_PIVOT_Y.get(),
-							IHServerConfig.INITIAL_HOUSE_PIVOT_Z.get()
-					))
 					.addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
 		}
 

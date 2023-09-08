@@ -4,6 +4,7 @@ import com.hexagram2021.initial_house.server.IHContent;
 import com.hexagram2021.initial_house.server.IHSavedData;
 import com.hexagram2021.initial_house.server.config.IHServerConfig;
 import com.hexagram2021.initial_house.server.util.IHLogger;
+import com.hexagram2021.initial_house.server.world.placements.SpawnPointOnlyPlacement;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -16,6 +17,8 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
+import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
@@ -36,6 +39,7 @@ public class InitialHouse {
 
 		MinecraftForge.EVENT_BUS.addListener(this::onPlayerRespawn);
 		MinecraftForge.EVENT_BUS.addListener(this::onEntityJoin);
+		MinecraftForge.EVENT_BUS.addListener(this::onServerClose);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
@@ -43,7 +47,11 @@ public class InitialHouse {
 		ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
 		if(serverPlayer.getRespawnPosition() == null || serverLevel == null || !hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
 			BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
-			serverPlayer.teleportTo(sharedSpawnPos.getX() + 0.5D, sharedSpawnPos.getY(), sharedSpawnPos.getZ() + 0.5D);
+			serverPlayer.teleportTo(
+					sharedSpawnPos.getX() + IHServerConfig.SPAWN_POINT_SHIFT_X.get() + 0.5D,
+					sharedSpawnPos.getY() + IHServerConfig.SPAWN_POINT_SHIFT_Y.get(),
+					sharedSpawnPos.getZ() + IHServerConfig.SPAWN_POINT_SHIFT_Z.get() + 0.5D
+			);
 		}
 	}
 
@@ -60,6 +68,10 @@ public class InitialHouse {
 			IHSavedData.addPlayer(serverPlayer.getUUID());
 			teleportPlayerToSpawnPoint(serverPlayer);
 		}
+	}
+
+	private void onServerClose(ServerStoppedEvent event) {
+		SpawnPointOnlyPlacement.cachedSpawnPointChunk = null;
 	}
 
 	private static boolean hasRespawnPosition(ServerLevel serverLevel, BlockPos blockPos) {
