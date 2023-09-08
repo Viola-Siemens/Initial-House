@@ -3,6 +3,7 @@ package com.hexagram2021.initial_house;
 import com.hexagram2021.initial_house.server.IHContent;
 import com.hexagram2021.initial_house.server.IHSavedData;
 import com.hexagram2021.initial_house.server.config.IHServerConfig;
+import com.hexagram2021.initial_house.server.util.IHLogger;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
@@ -20,12 +21,14 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import org.apache.logging.log4j.LogManager;
 
 @Mod(InitialHouse.MODID)
 public class InitialHouse {
 	public static final String MODID = "initial_house";
 
 	public InitialHouse() {
+		IHLogger.logger = LogManager.getLogger(MODID);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, IHServerConfig.getConfig());
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();

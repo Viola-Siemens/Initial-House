@@ -12,7 +12,7 @@ public final class IHStructureSets {
 	public static final Holder<StructureSet> INITIAL_HOUSE = register(
 			IHStructureSetKeys.INITIAL_HOUSE,
 			IHConfiguredStructures.INITIAL_HOUSE,
-			new SpawnPointOnlyPlacement(0, -1)
+			new SpawnPointOnlyPlacement(0, 0)
 	);
 
 	private IHStructureSets() {
