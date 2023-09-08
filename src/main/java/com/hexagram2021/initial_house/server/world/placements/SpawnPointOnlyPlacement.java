@@ -14,7 +14,7 @@ import javax.annotation.Nullable;
 
 public record SpawnPointOnlyPlacement(int xShift, int zShift) implements StructurePlacement {
 	@Nullable
-	public static ChunkPos cachedSpawnPointChunk = null;
+	private static ChunkPos cachedSpawnPointChunk = null;
 
 	public static final Codec<SpawnPointOnlyPlacement> CODEC = RecordCodecBuilder.create(
 			instance -> instance.group(
@@ -34,7 +34,11 @@ public record SpawnPointOnlyPlacement(int xShift, int zShift) implements Structu
 		return IHStructurePlacementTypes.RANDOM_SPREAD;
 	}
 
-	private static ChunkPos getSpawnPointChunk(ChunkGenerator chunkGenerator) {
+	public static void clearCache() {
+		cachedSpawnPointChunk = null;
+	}
+
+	public static ChunkPos getSpawnPointChunk(ChunkGenerator chunkGenerator) {
 		if(cachedSpawnPointChunk == null) {
 			BlockPos spawnPoint = chunkGenerator.climateSampler().findSpawnPosition();
 			IHLogger.debug("Spawn Point is (%d, %d, %d).".formatted(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ()));

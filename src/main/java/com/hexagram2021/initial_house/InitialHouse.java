@@ -17,7 +17,6 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -44,21 +43,21 @@ public class InitialHouse {
 	}
 
 	private static void teleportPlayerToSpawnPoint(ServerPlayer serverPlayer) {
-		ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
-		if(serverPlayer.getRespawnPosition() == null || serverLevel == null || !hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
-			BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
-			serverPlayer.teleportTo(
-					sharedSpawnPos.getX() + IHServerConfig.SPAWN_POINT_SHIFT_X.get() + 0.5D,
-					sharedSpawnPos.getY() + IHServerConfig.SPAWN_POINT_SHIFT_Y.get(),
-					sharedSpawnPos.getZ() + IHServerConfig.SPAWN_POINT_SHIFT_Z.get() + 0.5D
-			);
-		}
+		BlockPos sharedSpawnPos = SpawnPointOnlyPlacement.getSpawnPointChunk(serverPlayer.getLevel().getChunkSource().getGenerator()).getWorldPosition();
+		serverPlayer.teleportTo(
+				sharedSpawnPos.getX() + IHServerConfig.SPAWN_POINT_SHIFT_X.get() + 0.5D,
+				sharedSpawnPos.getY() + IHServerConfig.SPAWN_POINT_SHIFT_Y.get(),
+				sharedSpawnPos.getZ() + IHServerConfig.SPAWN_POINT_SHIFT_Z.get() + 0.5D
+		);
 	}
 
 	private void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
 		if(!player.level.isClientSide && player instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
-			teleportPlayerToSpawnPoint(serverPlayer);
+			ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
+			if (serverPlayer.getRespawnPosition() == null || serverLevel == null || !hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
+				teleportPlayerToSpawnPoint(serverPlayer);
+			}
 		}
 	}
 
@@ -71,7 +70,7 @@ public class InitialHouse {
 	}
 
 	private void onServerClose(ServerStoppedEvent event) {
-		SpawnPointOnlyPlacement.cachedSpawnPointChunk = null;
+		SpawnPointOnlyPlacement.clearCache();
 	}
 
 	private static boolean hasRespawnPosition(ServerLevel serverLevel, BlockPos blockPos) {
