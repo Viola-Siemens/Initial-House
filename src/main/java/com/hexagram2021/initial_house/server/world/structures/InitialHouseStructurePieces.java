@@ -5,12 +5,16 @@ import com.hexagram2021.initial_house.server.register.IHStructurePieceTypes;
 import net.minecraft.core.BlockPos;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.ServerLevelAccessor;
+import net.minecraft.world.level.StructureFeatureManager;
+import net.minecraft.world.level.WorldGenLevel;
 import net.minecraft.world.level.block.Blocks;
 import net.minecraft.world.level.block.Mirror;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.block.entity.BlockEntity;
 import net.minecraft.world.level.block.entity.RandomizableContainerBlockEntity;
+import net.minecraft.world.level.chunk.ChunkGenerator;
 import net.minecraft.world.level.levelgen.structure.BoundingBox;
 import net.minecraft.world.level.levelgen.structure.StructurePieceAccessor;
 import net.minecraft.world.level.levelgen.structure.TemplateStructurePiece;
@@ -18,6 +22,7 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSeriali
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.List;
 import java.util.Random;
@@ -33,12 +38,7 @@ public class InitialHouseStructurePieces {
 		public Piece(StructureManager structureManager, ResourceLocation location, BlockPos pos, Rotation rotation) {
 			super(
 					IHStructurePieceTypes.INITIAL_HOUSE, 0, structureManager,
-					location, location.toString(), makeSettings(rotation),
-					pos.offset(
-							-IHServerConfig.INITIAL_HOUSE_PIVOT_X.get(),
-							-IHServerConfig.INITIAL_HOUSE_PIVOT_Y.get(),
-							-IHServerConfig.INITIAL_HOUSE_PIVOT_Z.get()
-					)
+					location, location.toString(), makeSettings(rotation), pos
 			);
 		}
 
@@ -66,6 +66,17 @@ public class InitialHouseStructurePieces {
 		protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {
 			super.addAdditionalSaveData(context, tag);
 			tag.putString("Rot", this.placeSettings.getRotation().name());
+		}
+
+		@Override
+		public void postProcess(WorldGenLevel level, StructureFeatureManager structureFeatureManager, ChunkGenerator chunkGenerator, Random random, BoundingBox bbox, ChunkPos chunkPos, BlockPos blockPos) {
+			StructurePlaceSettings structureplacesettings = makeSettings(this.placeSettings.getRotation());
+			this.templatePosition = this.templatePosition.offset(StructureTemplate.calculateRelativePosition(structureplacesettings, new BlockPos(
+					-IHServerConfig.INITIAL_HOUSE_PIVOT_X.get(),
+					-IHServerConfig.INITIAL_HOUSE_PIVOT_Y.get(),
+					-IHServerConfig.INITIAL_HOUSE_PIVOT_Z.get()
+			)));
+			super.postProcess(level, structureFeatureManager, chunkGenerator, random, bbox, chunkPos, blockPos);
 		}
 
 		@Override

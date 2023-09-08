@@ -50,7 +50,7 @@ public class InitialHouse {
 		}
 	}
 
-	public void onEntityJoin(EntityJoinWorldEvent e) {
+	private void onEntityJoin(EntityJoinWorldEvent e) {
 		if(!e.getWorld().isClientSide && e.getEntity() instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
 			teleportPlayerToSpawnPoint(serverPlayer);
 		}
