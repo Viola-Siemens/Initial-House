@@ -17,8 +17,10 @@ public class IHContent {
 
 	@SubscribeEvent
 	public static void registerStructures(RegistryEvent.Register<StructureFeature<?>> event) {
+		IHStructurePlacementTypes.init();
 		IHStructures.init(event);
 		IHStructurePieceTypes.init();
 		IHConfiguredStructures.init();
+		IHStructureSets.init();
 	}
 }

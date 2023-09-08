@@ -15,25 +15,12 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilde
 
 public class InitialHouseStructure extends StructureFeature<NoneFeatureConfiguration> {
 	public InitialHouseStructure(Codec<NoneFeatureConfiguration> codec) {
-		super(codec, PieceGeneratorSupplier.simple(InitialHouseStructure::checkLocation, InitialHouseStructure::generatePieces));
+		super(codec, PieceGeneratorSupplier.simple(context -> true, InitialHouseStructure::generatePieces));
 	}
 
 	@Override
 	public GenerationStep.Decoration step() {
 		return GenerationStep.Decoration.SURFACE_STRUCTURES;
-	}
-
-	private static boolean checkLocation(PieceGeneratorSupplier.Context<NoneFeatureConfiguration> context) {
-		if(!context.validBiomeOnTop(Heightmap.Types.OCEAN_FLOOR_WG)) {
-			return false;
-		}
-		BlockPos centerOfChunk = new BlockPos(context.chunkPos().getMinBlockX() + 8, 0, context.chunkPos().getMinBlockZ() + 8);
-		int landHeight = context.chunkGenerator().getBaseHeight(centerOfChunk.getX(), centerOfChunk.getZ(), Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor());
-
-		NoiseColumn columnOfBlocks = context.chunkGenerator().getBaseColumn(centerOfChunk.getX(), centerOfChunk.getZ(), context.heightAccessor());
-		BlockState topBlock = columnOfBlocks.getBlock(landHeight);
-
-		return topBlock.getFluidState().isEmpty();
 	}
 
 	private static void generatePieces(StructurePiecesBuilder builder, PieceGenerator.Context<NoneFeatureConfiguration> context) {

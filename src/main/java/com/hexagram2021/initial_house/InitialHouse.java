@@ -37,7 +37,7 @@ public class InitialHouse {
 		Player player = event.getPlayer();
 		if(player instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
 			ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
-			if(serverPlayer.getRespawnPosition() == null || serverLevel == null || hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
+			if(serverPlayer.getRespawnPosition() == null || serverLevel == null || !hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
 				BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
 				serverPlayer.teleportTo(sharedSpawnPos.getX() + 0.5D, sharedSpawnPos.getY(), sharedSpawnPos.getZ() + 0.5D);
 			}
