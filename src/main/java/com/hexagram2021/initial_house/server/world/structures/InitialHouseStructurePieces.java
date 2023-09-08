@@ -71,12 +71,14 @@ public class InitialHouseStructurePieces {
 		@Override
 		public void postProcess(WorldGenLevel level, StructureFeatureManager structureFeatureManager, ChunkGenerator chunkGenerator, Random random, BoundingBox bbox, ChunkPos chunkPos, BlockPos blockPos) {
 			StructurePlaceSettings structureplacesettings = makeSettings(this.placeSettings.getRotation());
-			this.templatePosition = this.templatePosition.offset(StructureTemplate.calculateRelativePosition(structureplacesettings, new BlockPos(
+			BlockPos tempPos = this.templatePosition;
+			this.templatePosition = tempPos.offset(StructureTemplate.calculateRelativePosition(structureplacesettings, new BlockPos(
 					-IHServerConfig.INITIAL_HOUSE_PIVOT_X.get(),
 					-IHServerConfig.INITIAL_HOUSE_PIVOT_Y.get(),
 					-IHServerConfig.INITIAL_HOUSE_PIVOT_Z.get()
 			)));
 			super.postProcess(level, structureFeatureManager, chunkGenerator, random, bbox, chunkPos, blockPos);
+			this.templatePosition = tempPos;
 		}
 
 		@Override

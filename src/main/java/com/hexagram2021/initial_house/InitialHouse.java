@@ -1,6 +1,7 @@
 package com.hexagram2021.initial_house;
 
 import com.hexagram2021.initial_house.server.IHContent;
+import com.hexagram2021.initial_house.server.IHSavedData;
 import com.hexagram2021.initial_house.server.config.IHServerConfig;
 import net.minecraft.core.BlockPos;
 import net.minecraft.server.level.ServerLevel;
@@ -51,7 +52,9 @@ public class InitialHouse {
 	}
 
 	private void onEntityJoin(EntityJoinWorldEvent e) {
-		if(!e.getWorld().isClientSide && e.getEntity() instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
+		if(!e.getWorld().isClientSide && e.getEntity() instanceof ServerPlayer serverPlayer &&
+				IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get() && IHSavedData.containsPlayer(serverPlayer.getUUID())) {
+			IHSavedData.addPlayer(serverPlayer.getUUID());
 			teleportPlayerToSpawnPoint(serverPlayer);
 		}
 	}
