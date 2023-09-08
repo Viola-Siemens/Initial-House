@@ -1,13 +1,9 @@
 package com.hexagram2021.initial_house.server.world.structures;
 
-import com.google.gson.JsonArray;
-import com.google.gson.JsonElement;
-import com.google.gson.JsonObject;
-import com.google.gson.JsonPrimitive;
 import com.hexagram2021.initial_house.server.config.IHServerConfig;
 import com.hexagram2021.initial_house.server.register.IHStructurePieceTypes;
 import net.minecraft.core.BlockPos;
-import net.minecraft.nbt.*;
+import net.minecraft.nbt.CompoundTag;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.world.level.ServerLevelAccessor;
 import net.minecraft.world.level.block.Blocks;
@@ -24,7 +20,6 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureMana
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
 
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 public class InitialHouseStructurePieces {
@@ -34,7 +29,6 @@ public class InitialHouseStructurePieces {
 		pieces.addPiece(new InitialHouseStructurePieces.Piece(structureManager, id, pos, rotation));
 	}
 
-	@SuppressWarnings("CommentedOutCode")
 	public static class Piece extends TemplateStructurePiece {
 		public Piece(StructureManager structureManager, ResourceLocation location, BlockPos pos, Rotation rotation) {
 			super(
@@ -85,62 +79,8 @@ public class InitialHouseStructurePieces {
 					container.setLootTable(id, random.nextLong());
 				}
 			} else {
-//				CompoundTag tag = new CompoundTag();
 				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
-//				try {
-//					JsonObject json = GsonHelper.parse(function);
-//					convertJsonToNbt(tag, json);
-//				} catch (JsonParseException ignored) {
-//				}
-//				EntityType.loadEntityRecursive(tag, level, entity -> {
-//					entity.moveTo(pos, entity.getYRot(), entity.getXRot());
-//					return entity;
-//				});
 			}
-		}
-
-		private static void convertJsonToNbt(CompoundTag dst, JsonObject json) {
-			for(Map.Entry<String, JsonElement> entry: json.entrySet()) {
-				if(entry.getValue() instanceof JsonObject jsonObject) {
-					CompoundTag nbt = new CompoundTag();
-					convertJsonToNbt(nbt, jsonObject);
-					dst.put(entry.getKey(), nbt);
-				} else if(entry.getValue() instanceof JsonArray jsonArray) {
-					ListTag nbt = new ListTag();
-					convertArrayToListNbt(nbt, jsonArray);
-					dst.put(entry.getKey(), nbt);
-				} else if(entry.getValue() instanceof JsonPrimitive jsonPrimitive) {
-					if(jsonPrimitive.isString()) {
-						dst.put(entry.getKey(), StringTag.valueOf(jsonPrimitive.getAsString()));
-					} else if(jsonPrimitive.isBoolean()) {
-						dst.put(entry.getKey(), ByteTag.valueOf(jsonPrimitive.getAsBoolean()));
-					} else if(jsonPrimitive.isNumber()) {
-						dst.put(entry.getKey(), DoubleTag.valueOf(jsonPrimitive.getAsDouble()));
-					}
-				}
-			}
-		}
-
-		private static void convertArrayToListNbt(ListTag dst, JsonArray json) {
-			json.forEach(e -> {
-				if(e instanceof JsonObject jsonObject) {
-					CompoundTag nbt = new CompoundTag();
-					convertJsonToNbt(nbt, jsonObject);
-					dst.add(nbt);
-				} else if(e instanceof JsonArray jsonArray) {
-					ListTag nbt = new ListTag();
-					convertArrayToListNbt(nbt, jsonArray);
-					dst.add(nbt);
-				} else if(e instanceof JsonPrimitive jsonPrimitive) {
-					if(jsonPrimitive.isString()) {
-						dst.add(StringTag.valueOf(jsonPrimitive.getAsString()));
-					} else if(jsonPrimitive.isBoolean()) {
-						dst.add(ByteTag.valueOf(jsonPrimitive.getAsBoolean()));
-					} else if(jsonPrimitive.isNumber()) {
-						dst.add(DoubleTag.valueOf(jsonPrimitive.getAsDouble()));
-					}
-				}
-			});
 		}
 	}
 }

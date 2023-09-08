@@ -23,11 +23,11 @@ public class IHServerConfig {
 			INITIAL_HOUSE_STRUCTURES = BUILDER.comment("The resource id for this mod to generate at the spawn point of the world.")
 					.defineList("INITIAL_HOUSE_STRUCTURES", List.of(new ResourceLocation(MODID, "initial_house").toString()), o -> o instanceof String s && ResourceLocation.isValidResourceLocation(s));
 			INITIAL_HOUSE_PIVOT_X = BUILDER.comment("X-pivot of the initial house. Recommend: x-size / 2.")
-					.defineInRange("INITIAL_HOUSE_PIVOT_X", 5, -255, 255);
+					.defineInRange("INITIAL_HOUSE_PIVOT_X", 4, -255, 255);
 			INITIAL_HOUSE_PIVOT_Y = BUILDER.comment("Y-pivot of the initial house. Recommend: 0 or 1 or 2, depends on the thickness of the floor.")
 					.defineInRange("INITIAL_HOUSE_PIVOT_Y", 1, -255, 255);
 			INITIAL_HOUSE_PIVOT_Z = BUILDER.comment("Z-pivot of the initial house. Recommend: z-size / 2")
-					.defineInRange("INITIAL_HOUSE_PIVOT_Z", 5, -255, 255);
+					.defineInRange("INITIAL_HOUSE_PIVOT_Z", 4, -255, 255);
 			DISABLE_SPAWN_POINT_RANDOM_SHIFTING = BUILDER.comment("Disable random shifting when player respawn. Setting this value to true makes players spawn at an exact position instead of a random range.")
 					.define("DISABLE_SPAWN_POINT_RANDOM_SHIFTING", false);
 		BUILDER.pop();

@@ -12,6 +12,7 @@ import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
+import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -30,17 +31,28 @@ public class InitialHouse {
 		IHContent.modConstruct(bus);
 
 		MinecraftForge.EVENT_BUS.addListener(this::onPlayerRespawn);
+		MinecraftForge.EVENT_BUS.addListener(this::onEntityJoin);
 		MinecraftForge.EVENT_BUS.register(this);
+	}
+
+	private static void teleportPlayerToSpawnPoint(ServerPlayer serverPlayer) {
+		ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
+		if(serverPlayer.getRespawnPosition() == null || serverLevel == null || !hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
+			BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
+			serverPlayer.teleportTo(sharedSpawnPos.getX() + 0.5D, sharedSpawnPos.getY(), sharedSpawnPos.getZ() + 0.5D);
+		}
 	}
 
 	private void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
 		Player player = event.getPlayer();
-		if(player instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
-			ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
-			if(serverPlayer.getRespawnPosition() == null || serverLevel == null || !hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
-				BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
-				serverPlayer.teleportTo(sharedSpawnPos.getX() + 0.5D, sharedSpawnPos.getY(), sharedSpawnPos.getZ() + 0.5D);
-			}
+		if(!player.level.isClientSide && player instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
+			teleportPlayerToSpawnPoint(serverPlayer);
+		}
+	}
+
+	public void onEntityJoin(EntityJoinWorldEvent e) {
+		if(!e.getWorld().isClientSide && e.getEntity() instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
+			teleportPlayerToSpawnPoint(serverPlayer);
 		}
 	}
 
