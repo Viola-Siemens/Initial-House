@@ -43,7 +43,7 @@ public class InitialHouse {
 	}
 
 	private static void teleportPlayerToSpawnPoint(ServerPlayer serverPlayer) {
-		BlockPos sharedSpawnPos = SpawnPointOnlyPlacement.getSpawnPointChunk(serverPlayer.getLevel().getChunkSource().getGenerator()).getWorldPosition();
+		BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
 		serverPlayer.teleportTo(
 				sharedSpawnPos.getX() + IHServerConfig.SPAWN_POINT_SHIFT_X.get() + 0.5D,
 				sharedSpawnPos.getY() + IHServerConfig.SPAWN_POINT_SHIFT_Y.get(),
