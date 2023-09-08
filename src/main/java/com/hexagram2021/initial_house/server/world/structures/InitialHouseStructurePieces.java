@@ -18,6 +18,7 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceSeriali
 import net.minecraft.world.level.levelgen.structure.templatesystem.BlockIgnoreProcessor;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructureManager;
 import net.minecraft.world.level.levelgen.structure.templatesystem.StructurePlaceSettings;
+import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemplate;
 
 import java.util.List;
 import java.util.Random;
@@ -30,11 +31,20 @@ public class InitialHouseStructurePieces {
 	}
 
 	public static class Piece extends TemplateStructurePiece {
-		public Piece(StructureManager structureManager, ResourceLocation location, BlockPos pos, Rotation rotation) {
+		public Piece(StructureManager structureManager, ResourceLocation location, BlockPos pos, StructurePlaceSettings settings) {
 			super(
 					IHStructurePieceTypes.INITIAL_HOUSE, 0, structureManager,
-					location, location.toString(), makeSettings(rotation), pos
+					location, location.toString(), settings,
+					pos.offset(StructureTemplate.calculateRelativePosition(settings, new BlockPos(
+							-IHServerConfig.INITIAL_HOUSE_PIVOT_X.get(),
+							-IHServerConfig.INITIAL_HOUSE_PIVOT_Y.get(),
+							-IHServerConfig.INITIAL_HOUSE_PIVOT_Z.get()
+					)))
 			);
+		}
+
+		public Piece(StructureManager structureManager, ResourceLocation location, BlockPos pos, Rotation rotation) {
+			this(structureManager, location, pos, makeSettings(rotation));
 		}
 
 		public Piece(StructurePieceSerializationContext context, CompoundTag tag) {

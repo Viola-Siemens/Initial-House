@@ -22,7 +22,7 @@ public class InitialHouseStructure extends StructureFeature<NoneFeatureConfigura
 	}
 
 	private static void generatePieces(StructurePiecesBuilder builder, PieceGenerator.Context<NoneFeatureConfiguration> context) {
-		BlockPos centerOfChunk = new BlockPos(context.chunkPos().getMinBlockX() + 8, 0, context.chunkPos().getMinBlockZ() + 8);
+		BlockPos centerOfChunk = new BlockPos(context.chunkPos().getMinBlockX(), 0, context.chunkPos().getMinBlockZ());
 		int landHeight = context.chunkGenerator().getBaseHeight(centerOfChunk.getX(), centerOfChunk.getZ(), Heightmap.Types.WORLD_SURFACE_WG, context.heightAccessor());
 		BlockPos blockpos = new BlockPos(centerOfChunk.getX(), landHeight, centerOfChunk.getZ());
 		Rotation rotation = Rotation.getRandom(context.random());
