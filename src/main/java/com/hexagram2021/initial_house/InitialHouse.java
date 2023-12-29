@@ -10,6 +10,7 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
@@ -17,6 +18,7 @@ import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.entity.EntityJoinWorldEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
 import net.minecraftforge.fml.ModLoadingContext;
@@ -38,6 +40,7 @@ public class InitialHouse {
 
 		MinecraftForge.EVENT_BUS.addListener(this::onPlayerRespawn);
 		MinecraftForge.EVENT_BUS.addListener(this::onEntityJoin);
+		MinecraftForge.EVENT_BUS.addListener(this::onServerStarted);
 		MinecraftForge.EVENT_BUS.addListener(this::onServerClose);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
@@ -66,6 +69,15 @@ public class InitialHouse {
 				IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get() && !IHSavedData.containsPlayer(serverPlayer.getUUID())) {
 			IHSavedData.addPlayer(serverPlayer.getUUID());
 			teleportPlayerToSpawnPoint(serverPlayer);
+		}
+	}
+
+	public void onServerStarted(ServerStartedEvent event) {
+		ServerLevel world = event.getServer().getLevel(Level.OVERWORLD);
+		assert world != null;
+		if (!world.isClientSide) {
+			IHSavedData worldData = world.getDataStorage().computeIfAbsent(IHSavedData::new, IHSavedData::new, IHSavedData.SAVED_DATA_NAME);
+			IHSavedData.setInstance(worldData);
 		}
 	}
 
