@@ -13,7 +13,7 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilde
 
 public class InitialHouseStructure extends StructureFeature<NoneFeatureConfiguration> {
 	public InitialHouseStructure(Codec<NoneFeatureConfiguration> codec) {
-		super(codec, PieceGeneratorSupplier.simple(context -> true, InitialHouseStructure::generatePieces));
+		super(codec, PieceGeneratorSupplier.simple(context -> context.validBiomeOnTop(Heightmap.Types.OCEAN_FLOOR_WG), InitialHouseStructure::generatePieces));
 	}
 
 	@Override
