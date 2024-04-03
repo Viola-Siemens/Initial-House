@@ -6,18 +6,23 @@ buildscript {
         maven { name="sponge"; url 'https://repo.spongepowered.org/repository/maven-public/' }
     }
     dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '5.1.+', changing: true
+        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '[6.0,6.2)', changing: true
         classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
     }
 }
 
 plugins {
+    id 'eclipse'
+    id 'idea'
     id 'maven-publish'
-    id 'net.minecraftforge.gradle' version '5.1.+'
 }
+apply plugin: 'net.minecraftforge.gradle'
 apply plugin: 'org.spongepowered.mixin'
 
-version = '1.2.2'
+base {
+    archivesName = 'initial_house'
+}
+version = '3.1.0'
 group = 'com.hexagram2021.initial_house'
 archivesBaseName = 'initial_house'
 
@@ -25,9 +30,13 @@ java.toolchain.languageVersion = JavaLanguageVersion.of(17)
 
 println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
 minecraft {
-    mappings channel: 'official', version: '1.18.2'
+    mappings channel: 'official', version: '1.20.1'
 
     // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+
+    enableIdeaPrepareRuns = true
+    copyIdeResources = true
+    generateRunFolders = true
 
     runs {
         client {
@@ -128,7 +137,7 @@ repositories {
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.18.2-40.2.0'
+    minecraft 'net.minecraftforge:forge:1.20.1-47.2.0'
 
     annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
 }
@@ -146,6 +155,7 @@ jar {
                 'FMLCorePluginContainsFMLMod': 'true'
         ])
     }
+    from "LICENSE"
 }
 
 jar.finalizedBy('reobfJar')

@@ -1,0 +1,14 @@
+{
+  "placement": {
+    "type": "initial_house:init_placement",
+    "salt": 0,
+    "xShift": 0,
+    "zShift": 0
+  },
+  "structures": [
+    {
+      "structure": "initial_house:initial_house",
+      "weight": 1
+    }
+  ]
+}

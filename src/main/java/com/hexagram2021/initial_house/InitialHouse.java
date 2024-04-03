@@ -10,14 +10,16 @@ import net.minecraft.server.level.ServerLevel;
 import net.minecraft.server.level.ServerPlayer;
 import net.minecraft.world.entity.EntityType;
 import net.minecraft.world.entity.player.Player;
+import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
 import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinWorldEvent;
+import net.minecraftforge.event.entity.EntityJoinLevelEvent;
 import net.minecraftforge.event.entity.player.PlayerEvent;
+import net.minecraftforge.event.level.LevelEvent;
 import net.minecraftforge.event.server.ServerStartedEvent;
 import net.minecraftforge.event.server.ServerStoppedEvent;
 import net.minecraftforge.eventbus.api.IEventBus;
@@ -25,14 +27,14 @@ import net.minecraftforge.fml.ModLoadingContext;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.config.ModConfig;
 import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
-import org.apache.logging.log4j.LogManager;
+
+import java.util.Objects;
 
 @Mod(InitialHouse.MODID)
 public class InitialHouse {
 	public static final String MODID = "initial_house";
 
 	public InitialHouse() {
-		IHLogger.logger = LogManager.getLogger(MODID);
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, IHServerConfig.getConfig());
 
 		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
@@ -40,13 +42,14 @@ public class InitialHouse {
 
 		MinecraftForge.EVENT_BUS.addListener(this::onPlayerRespawn);
 		MinecraftForge.EVENT_BUS.addListener(this::onEntityJoin);
+		MinecraftForge.EVENT_BUS.addListener(this::onOverworldLoad);
 		MinecraftForge.EVENT_BUS.addListener(this::onServerStarted);
 		MinecraftForge.EVENT_BUS.addListener(this::onServerClose);
 		MinecraftForge.EVENT_BUS.register(this);
 	}
 
 	private static void teleportPlayerToSpawnPoint(ServerPlayer serverPlayer) {
-		BlockPos sharedSpawnPos = serverPlayer.getLevel().getSharedSpawnPos();
+		BlockPos sharedSpawnPos = serverPlayer.level().getSharedSpawnPos();
 		serverPlayer.teleportTo(
 				sharedSpawnPos.getX() + IHServerConfig.SPAWN_POINT_SHIFT_X.get() + 0.5D,
 				sharedSpawnPos.getY() + IHServerConfig.SPAWN_POINT_SHIFT_Y.get(),
@@ -55,20 +58,28 @@ public class InitialHouse {
 	}
 
 	private void onPlayerRespawn(PlayerEvent.PlayerRespawnEvent event) {
-		Player player = event.getPlayer();
-		if(!player.level.isClientSide && player instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
-			ServerLevel serverLevel = serverPlayer.getLevel().getServer().getLevel(serverPlayer.getRespawnDimension());
+		Player player = event.getEntity();
+		if(!player.level().isClientSide && player instanceof ServerPlayer serverPlayer && IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get()) {
+			ServerLevel serverLevel = Objects.requireNonNull(serverPlayer.level().getServer()).getLevel(serverPlayer.getRespawnDimension());
 			if (serverPlayer.getRespawnPosition() == null || serverLevel == null || !hasRespawnPosition(serverLevel, serverPlayer.getRespawnPosition())) {
 				teleportPlayerToSpawnPoint(serverPlayer);
 			}
 		}
 	}
 
-	private void onEntityJoin(EntityJoinWorldEvent e) {
-		if(!e.getWorld().isClientSide && e.getEntity() instanceof ServerPlayer serverPlayer &&
+	private void onEntityJoin(EntityJoinLevelEvent e) {
+		if(!e.getLevel().isClientSide && e.getEntity() instanceof ServerPlayer serverPlayer &&
 				IHServerConfig.DISABLE_SPAWN_POINT_RANDOM_SHIFTING.get() && !IHSavedData.containsPlayer(serverPlayer.getUUID())) {
 			IHSavedData.addPlayer(serverPlayer.getUUID());
 			teleportPlayerToSpawnPoint(serverPlayer);
+		}
+	}
+
+	public void onOverworldLoad(LevelEvent.Load event) {
+		if(event.getLevel() instanceof ServerLevel world && world.dimension().equals(Level.OVERWORLD)) {
+			BlockPos spawnPoint = world.getChunkSource().randomState().sampler().findSpawnPosition();
+			IHLogger.debug("Spawn Point is (%d, %d, %d).".formatted(spawnPoint.getX(), spawnPoint.getY(), spawnPoint.getZ()));
+			SpawnPointOnlyPlacement.setCache(new ChunkPos(spawnPoint));
 		}
 	}
 
@@ -92,7 +103,7 @@ public class InitialHouse {
 			return RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos).isPresent();
 		}
 		if (block instanceof BedBlock && BedBlock.canSetSpawn(serverLevel)) {
-			return BedBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos, 1.0F).isPresent();
+			return BedBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos, blockstate.getValue(BedBlock.FACING), 1.0F).isPresent();
 		}
 		return blockstate.getRespawnPosition(EntityType.PLAYER, serverLevel, blockPos, 1.0F, null).isPresent();
 	}
