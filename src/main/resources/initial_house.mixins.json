@@ -4,7 +4,7 @@
   "compatibilityLevel": "JAVA_17",
   "refmap": "initial_house.refmap.json",
   "mixins": [
-    "MinecraftServerMixin"
+    "ChunkGeneratorMixin"
   ],
   "minVersion": "0.8"
 }

@@ -50,6 +50,8 @@ public class IHServerConfig {
 	 */
 	public static final ForgeConfigSpec.IntValue SPAWN_POINT_SHIFT_Z;
 
+	public static final ForgeConfigSpec.IntValue PREVENT_STRUCTURES_GENERATE_IN;
+
 	static {
 		BUILDER.push("initial_house-server-config");
 			INITIAL_HOUSE_STRUCTURES = BUILDER.comment("The resource id for this mod to generate at the spawn point of the world.")
@@ -68,6 +70,8 @@ public class IHServerConfig {
 					.defineInRange("SPAWN_POINT_SHIFT_Y", 0, -255, 255);
 			SPAWN_POINT_SHIFT_Z = BUILDER.comment("Z-shift of the spawn point. Enabled only if DISABLE_SPAWN_POINT_RANDOM_SHIFTING = true.")
 					.defineInRange("SPAWN_POINT_SHIFT_Z", 0, -255, 255);
+			PREVENT_STRUCTURES_GENERATE_IN = BUILDER.comment("Radius (in chunks) that other structures will not generate around the initial house.")
+					.defineInRange("PREVENT_STRUCTURES_GENERATE_IN", 5, -1, 32767);
 		BUILDER.pop();
 		SPEC = BUILDER.build();
 	}
@@ -79,5 +83,8 @@ public class IHServerConfig {
 	 */
 	public static ForgeConfigSpec getConfig() {
 		return SPEC;
+	}
+
+	private IHServerConfig() {
 	}
 }
