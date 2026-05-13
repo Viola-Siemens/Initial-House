@@ -22,7 +22,7 @@ apply plugin: 'org.spongepowered.mixin'
 base {
     archivesName = 'initial_house'
 }
-version = '3.1.0'
+version = project.mod_version
 group = 'com.hexagram2021.initial_house'
 archivesBaseName = 'initial_house'
 
@@ -162,6 +162,15 @@ jar {
 }
 
 jar.finalizedBy('reobfJar')
+
+task sourceJar(type: Jar) {
+    archiveClassifier.set('sources')
+    from sourceSets.main.allJava
+}
+
+artifacts {
+    archives sourceJar
+}
 
 publishing {
     publications {
