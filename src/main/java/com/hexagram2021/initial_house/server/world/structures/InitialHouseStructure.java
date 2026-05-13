@@ -12,23 +12,52 @@ import net.minecraft.world.level.levelgen.structure.pieces.StructurePiecesBuilde
 
 import java.util.Optional;
 
+/**
+ * 初始房屋结构定义，负责确定生成阶段与结构片段构建入口喵~
+ *
+ * @author liudongyu
+ */
 public class InitialHouseStructure extends Structure {
+	/**
+	 * 初始房屋结构的编解码器喵~
+	 */
 	public static final Codec<InitialHouseStructure> CODEC = simpleCodec(InitialHouseStructure::new);
 
+	/**
+	 * 创建初始房屋结构实例喵~
+	 *
+	 * @param settings 结构设置喵~
+	 */
 	public InitialHouseStructure(Structure.StructureSettings settings) {
 		super(settings);
 	}
 
+	/**
+	 * 获取结构所属的世界生成阶段喵~
+	 *
+	 * @return 世界生成阶段喵~
+	 */
 	@Override
 	public GenerationStep.Decoration step() {
 		return GenerationStep.Decoration.SURFACE_STRUCTURES;
 	}
 
+	/**
+	 * 计算结构的生成起点喵~
+	 *
+	 * @param context 生成上下文喵~
+	 * @return 结构生成桩喵~
+	 */
 	@Override
 	protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
 		return onTopOfChunkCenter(context, Heightmap.Types.OCEAN_FLOOR_WG, (builder) -> generatePieces(builder, context));
 	}
 
+	/**
+	 * 获取结构注册类型喵~
+	 *
+	 * @return 结构类型喵~
+	 */
 	@Override
 	public StructureType<?> type() {
 		return IHStructureTypes.INITIAL_HOUSE.get();

@@ -10,21 +10,37 @@ import javax.annotation.Nullable;
 import java.util.List;
 import java.util.UUID;
 
+/**
+ * 模组世界级持久化数据，用于记录已经处理过首次出生逻辑的玩家喵~
+ *
+ * @author liudongyu
+ */
 public class IHSavedData extends SavedData {
 	@Nullable
 	private static IHSavedData INSTANCE = null;
 
 	private final List<UUID> players;
 
+	/**
+	 * 持久化数据在世界存档中的名称喵~
+	 */
 	public static final String SAVED_DATA_NAME = "Initial-House-SavedData";
 	private static final String PLAYERS_KEY = "players";
 	private static final String UUID_KEY = "uuid";
 
+	/**
+	 * 创建一个空的持久化数据实例喵~
+	 */
 	public IHSavedData() {
 		super();
 		this.players = Lists.newArrayList();
 	}
 
+	/**
+	 * 从 NBT 中恢复持久化数据喵~
+	 *
+	 * @param nbt 持久化标签喵~
+	 */
 	public IHSavedData(CompoundTag nbt) {
 		this();
 		if(nbt.contains(PLAYERS_KEY, Tag.TAG_LIST)) {
@@ -36,6 +52,12 @@ public class IHSavedData extends SavedData {
 		}
 	}
 
+	/**
+	 * 将当前数据写回 NBT 标签喵~
+	 *
+	 * @param nbt 输出标签喵~
+	 * @return 写入后的标签喵~
+	 */
 	@Override
 	public CompoundTag save(CompoundTag nbt) {
 		ListTag allPlayers = new ListTag();
@@ -50,6 +72,12 @@ public class IHSavedData extends SavedData {
 		return nbt;
 	}
 
+	/**
+	 * 判断指定玩家是否已经记录过首次处理状态喵~
+	 *
+	 * @param uuid 玩家 UUID 喵~
+	 * @return 若已记录则返回 true，否则返回 false 喵~
+	 */
 	public static boolean containsPlayer(UUID uuid) {
 		if(INSTANCE == null) {
 			return false;
@@ -57,6 +85,11 @@ public class IHSavedData extends SavedData {
 		return INSTANCE.players.contains(uuid);
 	}
 
+	/**
+	 * 记录指定玩家已经完成首次出生处理喵~
+	 *
+	 * @param uuid 玩家 UUID 喵~
+	 */
 	public static void addPlayer(UUID uuid) {
 		if(INSTANCE != null) {
 			INSTANCE.players.add(uuid);
@@ -64,6 +97,11 @@ public class IHSavedData extends SavedData {
 		}
 	}
 
+	/**
+	 * 设置当前激活的持久化数据实例喵~
+	 *
+	 * @param in 持久化数据实例喵~
+	 */
 	public static void setInstance(IHSavedData in) {
 		INSTANCE = in;
 	}

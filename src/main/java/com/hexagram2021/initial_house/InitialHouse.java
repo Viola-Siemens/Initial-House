@@ -30,10 +30,21 @@ import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
 
 import java.util.Objects;
 
+/**
+ * 模组主入口，负责配置注册、Forge 事件挂接以及出生点相关运行时逻辑喵~
+ *
+ * @author liudongyu
+ */
 @Mod(InitialHouse.MODID)
 public class InitialHouse {
+	/**
+	 * 模组 ID 常量喵~
+	 */
 	public static final String MODID = "initial_house";
 
+	/**
+	 * 初始化模组入口并完成注册绑定喵~
+	 */
 	public InitialHouse() {
 		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, IHServerConfig.getConfig());
 
@@ -75,6 +86,11 @@ public class InitialHouse {
 		}
 	}
 
+	/**
+	 * 在主世界加载后缓存出生点所在区块，供自定义结构放置逻辑使用喵~
+	 *
+	 * @param event 维度加载事件喵~
+	 */
 	public void onOverworldLoad(LevelEvent.Load event) {
 		if(event.getLevel() instanceof ServerLevel world && world.dimension().equals(Level.OVERWORLD)) {
 			BlockPos spawnPoint = world.getChunkSource().randomState().sampler().findSpawnPosition();
@@ -83,6 +99,11 @@ public class InitialHouse {
 		}
 	}
 
+	/**
+	 * 在服务端启动后装载本模组的世界级持久化数据喵~
+	 *
+	 * @param event 服务端启动事件喵~
+	 */
 	public void onServerStarted(ServerStartedEvent event) {
 		ServerLevel world = event.getServer().getLevel(Level.OVERWORLD);
 		assert world != null;

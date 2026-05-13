@@ -7,18 +7,47 @@ import java.util.List;
 
 import static com.hexagram2021.initial_house.InitialHouse.MODID;
 
+/**
+ * 模组服务端配置定义，负责声明结构模板、枢轴偏移与出生点偏移等参数喵~
+ *
+ * @author liudongyu
+ */
 public class IHServerConfig {
 	private static final ForgeConfigSpec.Builder BUILDER = new ForgeConfigSpec.Builder();
 	private static final ForgeConfigSpec SPEC;
 
+	/**
+	 * 候选初始房屋结构模板资源 ID 列表喵~
+	 */
 	public static final ForgeConfigSpec.ConfigValue<List<? extends String>> INITIAL_HOUSE_STRUCTURES;
+	/**
+	 * 初始房屋模板的 X 轴枢轴偏移喵~
+	 */
 	public static final ForgeConfigSpec.IntValue INITIAL_HOUSE_PIVOT_X;
+	/**
+	 * 初始房屋模板的 Y 轴枢轴偏移喵~
+	 */
 	public static final ForgeConfigSpec.IntValue INITIAL_HOUSE_PIVOT_Y;
+	/**
+	 * 初始房屋模板的 Z 轴枢轴偏移喵~
+	 */
 	public static final ForgeConfigSpec.IntValue INITIAL_HOUSE_PIVOT_Z;
 
+	/**
+	 * 是否禁用原版出生点随机偏移逻辑喵~
+	 */
 	public static final ForgeConfigSpec.BooleanValue DISABLE_SPAWN_POINT_RANDOM_SHIFTING;
+	/**
+	 * 精确出生点 X 轴偏移喵~
+	 */
 	public static final ForgeConfigSpec.IntValue SPAWN_POINT_SHIFT_X;
+	/**
+	 * 精确出生点 Y 轴偏移喵~
+	 */
 	public static final ForgeConfigSpec.IntValue SPAWN_POINT_SHIFT_Y;
+	/**
+	 * 精确出生点 Z 轴偏移喵~
+	 */
 	public static final ForgeConfigSpec.IntValue SPAWN_POINT_SHIFT_Z;
 
 	static {
@@ -43,6 +72,11 @@ public class IHServerConfig {
 		SPEC = BUILDER.build();
 	}
 
+	/**
+	 * 获取服务端配置定义对象喵~
+	 *
+	 * @return Forge 配置定义喵~
+	 */
 	public static ForgeConfigSpec getConfig() {
 		return SPEC;
 	}

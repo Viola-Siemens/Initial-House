@@ -23,14 +23,39 @@ import net.minecraft.world.level.levelgen.structure.templatesystem.StructureTemp
 
 import java.util.List;
 
+/**
+ * 初始房屋结构片段工具类，负责模板选择、片段构造与数据标记处理喵~
+ *
+ * @author liudongyu
+ */
 public class InitialHouseStructurePieces {
+	/**
+	 * 向结构构建器中加入一个初始房屋片段喵~
+	 *
+	 * @param structureTemplateManager 结构模板管理器喵~
+	 * @param pos 目标原点喵~
+	 * @param rotation 结构旋转喵~
+	 * @param random 随机源喵~
+	 * @param pieces 结构片段访问器喵~
+	 */
 	public static void addPieces(StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random, StructurePieceAccessor pieces) {
 		List<ResourceLocation> initialHouses = IHServerConfig.INITIAL_HOUSE_STRUCTURES.get().stream().map(ResourceLocation::new).toList();
 		ResourceLocation id = initialHouses.get(random.nextInt(initialHouses.size()));
 		pieces.addPiece(new InitialHouseStructurePieces.Piece(structureTemplateManager, id, pos, rotation));
 	}
 
+	/**
+	 * 初始房屋的模板结构片段实现喵~
+	 */
 	public static class Piece extends TemplateStructurePiece {
+		/**
+		 * 使用现成放置设置创建结构片段喵~
+		 *
+		 * @param structureTemplateManager 结构模板管理器喵~
+		 * @param location 模板资源位置喵~
+		 * @param pos 放置原点喵~
+		 * @param settings 放置设置喵~
+		 */
 		public Piece(StructureTemplateManager structureTemplateManager, ResourceLocation location, BlockPos pos, StructurePlaceSettings settings) {
 			super(
 					IHStructurePieceTypes.INITIAL_HOUSE.get(), 0, structureTemplateManager,
@@ -43,10 +68,24 @@ public class InitialHouseStructurePieces {
 			);
 		}
 
+		/**
+		 * 根据旋转信息创建结构片段喵~
+		 *
+		 * @param structureTemplateManager 结构模板管理器喵~
+		 * @param location 模板资源位置喵~
+		 * @param pos 放置原点喵~
+		 * @param rotation 结构旋转喵~
+		 */
 		public Piece(StructureTemplateManager structureTemplateManager, ResourceLocation location, BlockPos pos, Rotation rotation) {
 			this(structureTemplateManager, location, pos, makeSettings(rotation));
 		}
 
+		/**
+		 * 从序列化数据恢复结构片段喵~
+		 *
+		 * @param context 结构片段序列化上下文喵~
+		 * @param tag 结构片段标签喵~
+		 */
 		public Piece(StructurePieceSerializationContext context, CompoundTag tag) {
 			super(
 					IHStructurePieceTypes.INITIAL_HOUSE.get(), tag, context.structureTemplateManager(),
@@ -61,13 +100,27 @@ public class InitialHouseStructurePieces {
 					.addProcessor(BlockIgnoreProcessor.STRUCTURE_BLOCK);
 		}
 
-
+		/**
+		 * 保存额外的结构片段序列化数据喵~
+		 *
+		 * @param context 结构片段序列化上下文喵~
+		 * @param tag 输出标签喵~
+		 */
 		@Override
 		protected void addAdditionalSaveData(StructurePieceSerializationContext context, CompoundTag tag) {
 			super.addAdditionalSaveData(context, tag);
 			tag.putString("Rot", this.placeSettings.getRotation().name());
 		}
 
+		/**
+		 * 处理结构模板中的数据标记喵~
+		 *
+		 * @param function 数据标记内容喵~
+		 * @param pos 标记方块位置喵~
+		 * @param level 服务端世界访问器喵~
+		 * @param random 随机源喵~
+		 * @param sbb 当前结构包围盒喵~
+		 */
 		@Override
 		protected void handleDataMarker(String function, BlockPos pos, ServerLevelAccessor level, RandomSource random, BoundingBox sbb) {
 			if(ResourceLocation.isValidResourceLocation(function)) {
