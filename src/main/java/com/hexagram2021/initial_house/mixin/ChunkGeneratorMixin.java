@@ -53,7 +53,7 @@ public class ChunkGeneratorMixin {
 														  @Local(argsOnly = true) RegistryAccess registryAccess, @Local(argsOnly = true) Holder<StructureSet> structureSetHolder) {
 		boolean ret = original.call(instance, chunkGeneratorStructureState, x, z);
 		if(ret && !structureSetHolder.is(IHStructureSetKeys.INITIAL_HOUSE)) {
-			return chunkGeneratorStructureState.hasStructureChunkInRange(
+			return !chunkGeneratorStructureState.hasStructureChunkInRange(
 					registryAccess.lookupOrThrow(Registries.STRUCTURE_SET).getOrThrow(IHStructureSetKeys.INITIAL_HOUSE),
 					x, z, IHServerConfig.PREVENT_STRUCTURES_GENERATE_IN.get()
 			);

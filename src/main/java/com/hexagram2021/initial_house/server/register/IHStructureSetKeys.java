@@ -16,7 +16,7 @@ public final class IHStructureSetKeys {
 	/**
 	 * 初始房屋结构集资源键喵~
 	 */
-	public static final ResourceKey<StructureSet> INITIAL_HOUSE = createKey("initial_house");
+	public static final ResourceKey<StructureSet> INITIAL_HOUSE = createKey("initial_houses");
 
 	private IHStructureSetKeys() {
 	}
@@ -36,5 +36,6 @@ public final class IHStructureSetKeys {
 	 * 触发类加载以确保静态常量完成初始化喵~
 	 */
 	public static void init() {
+		// Lazy init
 	}
 }
