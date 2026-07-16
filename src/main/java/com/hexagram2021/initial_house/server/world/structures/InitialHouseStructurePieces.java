@@ -3,7 +3,9 @@ package com.hexagram2021.initial_house.server.world.structures;
 import com.hexagram2021.initial_house.server.config.IHServerConfig;
 import com.hexagram2021.initial_house.server.register.IHStructurePieceTypes;
 import net.minecraft.core.BlockPos;
+import net.minecraft.core.registries.Registries;
 import net.minecraft.nbt.CompoundTag;
+import net.minecraft.resources.ResourceKey;
 import net.minecraft.resources.ResourceLocation;
 import net.minecraft.util.RandomSource;
 import net.minecraft.world.level.ServerLevelAccessor;
@@ -28,7 +30,9 @@ import java.util.List;
  *
  * @author liudongyu
  */
-public class InitialHouseStructurePieces {
+public final class InitialHouseStructurePieces {
+	private static final String REGISTRY_NAME_MATCHER = "([a-z0-9_.-]+:[a-z0-9_/.-]+)";
+
 	/**
 	 * 向结构构建器中加入一个初始房屋片段喵~
 	 *
@@ -39,7 +43,7 @@ public class InitialHouseStructurePieces {
 	 * @param pieces 结构片段访问器喵~
 	 */
 	public static void addPieces(StructureTemplateManager structureTemplateManager, BlockPos pos, Rotation rotation, RandomSource random, StructurePieceAccessor pieces) {
-		List<ResourceLocation> initialHouses = IHServerConfig.INITIAL_HOUSE_STRUCTURES.get().stream().map(ResourceLocation::new).toList();
+		List<ResourceLocation> initialHouses = IHServerConfig.INITIAL_HOUSE_STRUCTURES.get().stream().map(ResourceLocation::parse).toList();
 		ResourceLocation id = initialHouses.get(random.nextInt(initialHouses.size()));
 		pieces.addPiece(new InitialHouseStructurePieces.Piece(structureTemplateManager, id, pos, rotation));
 	}
@@ -89,7 +93,7 @@ public class InitialHouseStructurePieces {
 		public Piece(StructurePieceSerializationContext context, CompoundTag tag) {
 			super(
 					IHStructurePieceTypes.INITIAL_HOUSE.get(), tag, context.structureTemplateManager(),
-					(location) -> makeSettings(Rotation.valueOf(tag.getString("Rot")))
+					location -> makeSettings(Rotation.valueOf(tag.getString("Rot")))
 			);
 		}
 
@@ -123,17 +127,20 @@ public class InitialHouseStructurePieces {
 		 */
 		@Override
 		protected void handleDataMarker(String function, BlockPos pos, ServerLevelAccessor level, RandomSource random, BoundingBox sbb) {
-			if(ResourceLocation.isValidResourceLocation(function)) {
-				ResourceLocation id = new ResourceLocation(function);
+			if(function.matches(REGISTRY_NAME_MATCHER)) {
+				ResourceLocation id = ResourceLocation.parse(function);
 				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 				BlockPos chestPos = pos.below();
 				BlockEntity blockentity = level.getBlockEntity(chestPos);
 				if (blockentity instanceof RandomizableContainerBlockEntity container && sbb.isInside(chestPos)) {
-					container.setLootTable(id, random.nextLong());
+					container.setLootTable(ResourceKey.create(Registries.LOOT_TABLE, id), random.nextLong());
 				}
 			} else {
 				level.setBlock(pos, Blocks.AIR.defaultBlockState(), 3);
 			}
 		}
+	}
+
+	private InitialHouseStructurePieces() {
 	}
 }

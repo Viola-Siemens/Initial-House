@@ -1,13 +1,13 @@
 package com.hexagram2021.initial_house.server.register;
 
 import com.hexagram2021.initial_house.server.world.placements.SpawnPointOnlyPlacement;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacement;
 import net.minecraft.world.level.levelgen.structure.placement.StructurePlacementType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.hexagram2021.initial_house.InitialHouse.MODID;
 
@@ -21,7 +21,7 @@ public final class IHStructurePlacementTypes {
 	/**
 	 * 仅在出生点区块附近生效的结构放置类型喵~
 	 */
-	public static final RegistryObject<StructurePlacementType<SpawnPointOnlyPlacement>> INIT_PLACEMENT = register("init_placement", SpawnPointOnlyPlacement.CODEC);
+	public static final DeferredHolder<StructurePlacementType<?>, StructurePlacementType<SpawnPointOnlyPlacement>> INIT_PLACEMENT = register("init_placement", SpawnPointOnlyPlacement.CODEC);
 
 	private IHStructurePlacementTypes() {
 	}
@@ -35,7 +35,7 @@ public final class IHStructurePlacementTypes {
 	 * @return 注册对象喵~
 	 */
 	@SuppressWarnings("SameParameterValue")
-	private static <SP extends StructurePlacement> RegistryObject<StructurePlacementType<SP>> register(String name, Codec<SP> codec) {
+	private static <SP extends StructurePlacement> DeferredHolder<StructurePlacementType<?>, StructurePlacementType<SP>> register(String name, MapCodec<SP> codec) {
 		return REGISTER.register(name, () -> () -> codec);
 	}
 

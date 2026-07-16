@@ -1,7 +1,7 @@
 package com.hexagram2021.initial_house.server.world.structures;
 
 import com.hexagram2021.initial_house.server.register.IHStructureTypes;
-import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import net.minecraft.core.BlockPos;
 import net.minecraft.world.level.block.Rotation;
 import net.minecraft.world.level.levelgen.GenerationStep;
@@ -21,7 +21,7 @@ public class InitialHouseStructure extends Structure {
 	/**
 	 * 初始房屋结构的编解码器喵~
 	 */
-	public static final Codec<InitialHouseStructure> CODEC = simpleCodec(InitialHouseStructure::new);
+	public static final MapCodec<InitialHouseStructure> CODEC = simpleCodec(InitialHouseStructure::new);
 
 	/**
 	 * 创建初始房屋结构实例喵~
@@ -50,7 +50,7 @@ public class InitialHouseStructure extends Structure {
 	 */
 	@Override
 	protected Optional<GenerationStub> findGenerationPoint(GenerationContext context) {
-		return onTopOfChunkCenter(context, Heightmap.Types.OCEAN_FLOOR_WG, (builder) -> generatePieces(builder, context));
+		return onTopOfChunkCenter(context, Heightmap.Types.OCEAN_FLOOR_WG, builder -> generatePieces(builder, context));
 	}
 
 	/**

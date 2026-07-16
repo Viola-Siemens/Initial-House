@@ -1,169 +1,96 @@
-buildscript {
-    repositories {
-        maven { url = 'https://maven.minecraftforge.net' }
-        jcenter()
-        mavenCentral()
-        maven { name="sponge"; url 'https://repo.spongepowered.org/repository/maven-public/' }
-    }
-    dependencies {
-        classpath group: 'net.minecraftforge.gradle', name: 'ForgeGradle', version: '[6.0,6.2)', changing: true
-        classpath 'org.spongepowered:mixingradle:0.7-SNAPSHOT'
-    }
-}
-
 plugins {
+    id 'java-library'
     id 'eclipse'
     id 'idea'
     id 'maven-publish'
+    id 'net.neoforged.gradle.userdev' version '7.0.192'
 }
-apply plugin: 'net.minecraftforge.gradle'
-apply plugin: 'org.spongepowered.mixin'
+
+version = mod_version
+group = "com.hexagram2021.${mod_id}"
 
 base {
-    archivesName = 'initial_house'
+    archivesName = mod_id
 }
-version = project.mod_version
-group = 'com.hexagram2021.initial_house'
-archivesBaseName = 'initial_house'
 
-java.toolchain.languageVersion = JavaLanguageVersion.of(17)
+java.toolchain.languageVersion = JavaLanguageVersion.of(21)
 
-println "Java: ${System.getProperty 'java.version'}, JVM: ${System.getProperty 'java.vm.version'} (${System.getProperty 'java.vendor'}), Arch: ${System.getProperty 'os.arch'}"
-minecraft {
-    mappings channel: 'official', version: '1.20.1'
+runs {
+    configureEach {
+        systemProperty 'forge.logging.markers', 'REGISTRIES'
+        systemProperty 'forge.logging.console.level', 'debug'
 
-    // accessTransformer = file('src/main/resources/META-INF/accesstransformer.cfg')
+        modSource project.sourceSets.main
+    }
 
-    enableIdeaPrepareRuns = true
-    copyIdeResources = true
-    generateRunFolders = true
+    client {
+        workingDirectory project.file('run/client')
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
 
-    runs {
-        client {
-            workingDirectory project.file('run/client')
+    server {
+        workingDirectory project.file('run/server')
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
 
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
+    gameTestServer {
+        workingDirectory project.file('run/testServer')
+        systemProperty 'forge.enabledGameTestNamespaces', mod_id
+    }
 
-            property 'forge.logging.console.level', 'debug'
+    data {
+        workingDirectory project.file('run/data')
 
-            property 'forge.enabledGameTestNamespaces', 'initial_house'
-            arg "-mixin.config=initial_house.mixins.json"
-
-            mods {
-                initial_house {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        server {
-            workingDirectory project.file('run/server')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'initial_house'
-            arg "-mixin.config=initial_house.mixins.json"
-
-            mods {
-                initial_house {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        gameTestServer {
-            workingDirectory project.file('run/test_server')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            property 'forge.logging.console.level', 'debug'
-
-            property 'forge.enabledGameTestNamespaces', 'initial_house'
-            arg "-mixin.config=initial_house.mixins.json"
-
-            mods {
-                initial_house {
-                    source sourceSets.main
-                }
-            }
-        }
-
-        data {
-            workingDirectory project.file('run/data')
-
-            property 'forge.logging.markers', 'REGISTRIES'
-            property 'mixin.env.remapRefMap', 'true'
-            property 'mixin.env.refMapRemappingFile', "${projectDir}/build/createSrgToMcp/output.srg"
-
-            property 'forge.logging.console.level', 'debug'
-
-            args '--mod', 'initial_house', '--all', '--output', file('src/generated/resources/'), '--existing', file('src/main/resources/')
-            arg "-mixin.config=initial_house.mixins.json"
-
-            mods {
-                initial_house {
-                    source sourceSets.main
-                }
-            }
-        }
+        programArguments.addAll '--mod', mod_id, '--all', '--output', file('src/generated/resources/').getAbsolutePath(), '--existing', file('src/main/resources/').getAbsolutePath()
     }
 }
 
 sourceSets.main.resources { srcDir 'src/generated/resources' }
 
 repositories {
-    maven { // TOP
+    maven {
         url "https://cursemaven.com"
-        content {
-            includeGroup "curse.maven"
-        }
     }
-    maven { // JEI
+    maven {
         name 'DVS1 Maven FS'
         url 'https://dvs1.progwml6.com/files/maven'
     }
-    maven { //mirror
+    maven {
         name = "ModMaven"
         url = "https://modmaven.dev"
+    }
+    maven {
+        name = "ParchmentMC"
+        url = "https://maven.parchmentmc.org/"
     }
 }
 
 dependencies {
-    minecraft 'net.minecraftforge:forge:1.20.1-47.2.0'
-
-    annotationProcessor 'org.spongepowered:mixin:0.8.5:processor'
-
-    implementation annotationProcessor('io.github.llamalad7:mixinextras-common:0.4.1')
-    implementation "io.github.llamalad7:mixinextras-forge:0.4.1"
+    implementation "net.neoforged:neoforge:${neo_version}"
 }
 
-jar {
-    manifest {
-        attributes([
-                "Specification-Title"     : "Initial House",
-                "Specification-Vendor"    : "Hexagram",
-                "Specification-Version"   : "1",
-                "Implementation-Title"    : project.name,
-                "Implementation-Version"  : project.jar.archiveVersion,
-                "Implementation-Vendor"   : "Hexagram",
-                "Implementation-Timestamp": new Date().format("yyyy-MM-dd'T'HH:mm:ssZ"),
-                'FMLCorePluginContainsFMLMod': 'true'
-        ])
+tasks.withType(ProcessResources).configureEach {
+    var replaceProperties = [
+            minecraft_version      : minecraft_version,
+            minecraft_version_range: minecraft_version_range,
+            neo_version            : neo_version,
+            neo_version_range      : neo_version_range,
+            loader_version_range   : loader_version_range,
+            mod_id                 : mod_id,
+            mod_name               : mod_name,
+            mod_license            : mod_license,
+            mod_version            : mod_version,
+            mod_authors            : mod_authors,
+            mod_description        : mod_description
+    ]
+    inputs.properties replaceProperties
+
+    filesMatching(['META-INF/neoforge.mods.toml']) {
+        expand replaceProperties
     }
-    from "LICENSE"
 }
 
-jar.finalizedBy('reobfJar')
-
-task sourceJar(type: Jar) {
+tasks.register('sourceJar', Jar) {
     archiveClassifier.set('sources')
     from sourceSets.main.allJava
 }
@@ -174,25 +101,24 @@ artifacts {
 
 publishing {
     publications {
-        mavenJava(MavenPublication) {
-            artifact jar
+        register('mavenJava', MavenPublication) {
+            from components.java
         }
     }
     repositories {
         maven {
-            url "file://${project.projectDir}/mcmodsrepo"
+            url "file://${project.projectDir}/repo"
         }
     }
 }
 
-mixin {
-    add sourceSets.main, 'initial_house.refmap.json'
-    config 'initial_house.mixins.json'
-
-    debug.verbose = true
-    debug.export = true
-}
-
 tasks.withType(JavaCompile).configureEach {
     options.encoding = 'UTF-8'
+}
+
+idea {
+    module {
+        downloadSources = true
+        downloadJavadoc = true
+    }
 }

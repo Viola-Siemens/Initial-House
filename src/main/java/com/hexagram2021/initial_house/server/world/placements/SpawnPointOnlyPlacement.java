@@ -3,6 +3,7 @@ package com.hexagram2021.initial_house.server.world.placements;
 import com.hexagram2021.initial_house.server.register.IHStructurePlacementTypes;
 import com.hexagram2021.initial_house.server.util.IHLogger;
 import com.mojang.serialization.Codec;
+import com.mojang.serialization.MapCodec;
 import com.mojang.serialization.codecs.RecordCodecBuilder;
 import net.minecraft.core.Vec3i;
 import net.minecraft.world.level.ChunkPos;
@@ -28,7 +29,7 @@ public class SpawnPointOnlyPlacement extends StructurePlacement {
 	/**
 	 * 该放置规则的编解码器喵~
 	 */
-	public static final Codec<SpawnPointOnlyPlacement> CODEC = RecordCodecBuilder.create(
+	public static final MapCodec<SpawnPointOnlyPlacement> CODEC = RecordCodecBuilder.mapCodec(
 			instance -> placementCodec(instance).and(instance.group(
 					Codec.intRange(-1024, 1023).fieldOf("xShift").forGetter(SpawnPointOnlyPlacement::xShift),
 					Codec.intRange(-1024, 1023).fieldOf("zShift").forGetter(SpawnPointOnlyPlacement::zShift)

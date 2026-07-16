@@ -12,25 +12,11 @@ import static com.hexagram2021.initial_house.InitialHouse.MODID;
  * @author liudongyu
  */
 @SuppressWarnings("unused")
-public class IHLogger {
-	/**
-	 * 是否启用调试日志输出喵~
-	 */
-	public static boolean debugMode = true;
+public final class IHLogger {
 	/**
 	 * 模组主日志器实例喵~
 	 */
-	public static Logger logger = LogManager.getLogger(MODID);
-
-	/**
-	 * 按指定日志级别输出对象内容喵~
-	 *
-	 * @param logLevel 日志级别喵~
-	 * @param object 输出对象喵~
-	 */
-	public static void log(Level logLevel, Object object) {
-		logger.log(logLevel, String.valueOf(object));
-	}
+	private static final Logger LOGGER = LogManager.getLogger(MODID);
 
 	/**
 	 * 输出错误级别日志喵~
@@ -38,16 +24,7 @@ public class IHLogger {
 	 * @param object 输出对象喵~
 	 */
 	public static void error(Object object) {
-		log(Level.ERROR, object);
-	}
-
-	/**
-	 * 输出信息级别日志喵~
-	 *
-	 * @param object 输出对象喵~
-	 */
-	public static void info(Object object) {
-		log(Level.INFO, object);
+		LOGGER.log(Level.ERROR, object);
 	}
 
 	/**
@@ -56,7 +33,25 @@ public class IHLogger {
 	 * @param object 输出对象喵~
 	 */
 	public static void warn(Object object) {
-		log(Level.WARN, object);
+		LOGGER.log(Level.WARN, object);
+	}
+
+	/**
+	 * 输出信息级别日志喵~
+	 *
+	 * @param object 输出对象喵~
+	 */
+	public static void info(Object object) {
+		LOGGER.log(Level.INFO, object);
+	}
+
+	/**
+	 * 输出调试级别日志喵~
+	 *
+	 * @param object 输出对象喵~
+	 */
+	public static void debug(Object object) {
+		LOGGER.log(Level.DEBUG, object);
 	}
 
 	/**
@@ -66,7 +61,7 @@ public class IHLogger {
 	 * @param params 格式化参数喵~
 	 */
 	public static void error(String message, Object... params) {
-		logger.log(Level.ERROR, message, params);
+		LOGGER.log(Level.ERROR, message, params);
 	}
 
 	/**
@@ -76,7 +71,7 @@ public class IHLogger {
 	 * @param t 异常对象喵~
 	 */
 	public static void error(String message, Throwable t) {
-		logger.log(Level.ERROR, message, t);
+		LOGGER.log(Level.ERROR, message, t);
 	}
 
 	/**
@@ -86,7 +81,7 @@ public class IHLogger {
 	 * @param params 格式化参数喵~
 	 */
 	public static void info(String message, Object... params) {
-		logger.log(Level.INFO, message, params);
+		LOGGER.log(Level.INFO, message, params);
 	}
 
 	/**
@@ -96,29 +91,19 @@ public class IHLogger {
 	 * @param params 格式化参数喵~
 	 */
 	public static void warn(String message, Object... params) {
-		logger.log(Level.WARN, message, params);
-	}
-
-	/**
-	 * 在调试模式下输出调试日志喵~
-	 *
-	 * @param object 输出对象喵~
-	 */
-	public static void debug(Object object) {
-		if(debugMode) {
-			log(Level.INFO, "[DEBUG:] " + object);
-		}
+		LOGGER.log(Level.WARN, message, params);
 	}
 
 	/**
 	 * 在调试模式下输出格式化调试日志喵~
 	 *
-	 * @param format 日志模板喵~
+	 * @param message 日志模板喵~
 	 * @param params 格式化参数喵~
 	 */
-	public static void debug(String format, Object... params) {
-		if(debugMode) {
-			info("[DEBUG:] " + format, params);
-		}
+	public static void debug(String message, Object... params) {
+		LOGGER.log(Level.DEBUG, message, params);
+	}
+
+	private IHLogger() {
 	}
 }

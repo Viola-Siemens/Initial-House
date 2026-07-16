@@ -4,9 +4,9 @@ import com.hexagram2021.initial_house.server.world.structures.InitialHouseStruct
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.Structure;
 import net.minecraft.world.level.levelgen.structure.StructureType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.hexagram2021.initial_house.InitialHouse.MODID;
 
@@ -20,7 +20,7 @@ public final class IHStructureTypes {
 	/**
 	 * 初始房屋结构类型喵~
 	 */
-	public static final RegistryObject<StructureType<InitialHouseStructure>> INITIAL_HOUSE = register("initial_house", () -> InitialHouseStructure.CODEC);
+	public static final DeferredHolder<StructureType<?>, StructureType<InitialHouseStructure>> INITIAL_HOUSE = register("initial_house", () -> InitialHouseStructure.CODEC);
 
 	private IHStructureTypes() {
 	}
@@ -34,7 +34,7 @@ public final class IHStructureTypes {
 	 * @return 注册对象喵~
 	 */
 	@SuppressWarnings("SameParameterValue")
-	private static <T extends Structure> RegistryObject<StructureType<T>> register(String name, StructureType<T> codec) {
+	private static <T extends Structure> DeferredHolder<StructureType<?>, StructureType<T>> register(String name, StructureType<T> codec) {
 		return REGISTER.register(name, () -> codec);
 	}
 

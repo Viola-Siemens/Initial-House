@@ -1,8 +1,8 @@
 package com.hexagram2021.initial_house.server;
 
 import com.hexagram2021.initial_house.server.register.*;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.common.Mod;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.common.EventBusSubscriber;
 
 import static com.hexagram2021.initial_house.InitialHouse.MODID;
 
@@ -11,8 +11,8 @@ import static com.hexagram2021.initial_house.InitialHouse.MODID;
  *
  * @author liudongyu
  */
-@Mod.EventBusSubscriber(modid = MODID, bus = Mod.EventBusSubscriber.Bus.MOD)
-public class IHContent {
+@EventBusSubscriber(modid = MODID)
+public final class IHContent {
 	/**
 	 * 执行模组构造阶段的注册初始化喵~
 	 *
@@ -23,5 +23,8 @@ public class IHContent {
 		IHStructurePieceTypes.init(bus);
 		IHStructureTypes.init(bus);
 		IHStructureSetKeys.init();
+	}
+
+	private IHContent() {
 	}
 }

@@ -14,19 +14,20 @@ import net.minecraft.world.level.ChunkPos;
 import net.minecraft.world.level.Level;
 import net.minecraft.world.level.block.BedBlock;
 import net.minecraft.world.level.block.Block;
+import net.minecraft.world.level.block.HorizontalDirectionalBlock;
 import net.minecraft.world.level.block.RespawnAnchorBlock;
 import net.minecraft.world.level.block.state.BlockState;
-import net.minecraftforge.common.MinecraftForge;
-import net.minecraftforge.event.entity.EntityJoinLevelEvent;
-import net.minecraftforge.event.entity.player.PlayerEvent;
-import net.minecraftforge.event.level.LevelEvent;
-import net.minecraftforge.event.server.ServerStartedEvent;
-import net.minecraftforge.event.server.ServerStoppedEvent;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.fml.ModLoadingContext;
-import net.minecraftforge.fml.common.Mod;
-import net.minecraftforge.fml.config.ModConfig;
-import net.minecraftforge.fml.javafmlmod.FMLJavaModLoadingContext;
+import net.minecraft.world.level.saveddata.SavedData;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.fml.ModContainer;
+import net.neoforged.fml.common.Mod;
+import net.neoforged.fml.config.ModConfig;
+import net.neoforged.neoforge.common.NeoForge;
+import net.neoforged.neoforge.event.entity.EntityJoinLevelEvent;
+import net.neoforged.neoforge.event.entity.player.PlayerEvent;
+import net.neoforged.neoforge.event.level.LevelEvent;
+import net.neoforged.neoforge.event.server.ServerStartedEvent;
+import net.neoforged.neoforge.event.server.ServerStoppedEvent;
 
 import java.util.Objects;
 
@@ -44,26 +45,27 @@ public class InitialHouse {
 
 	/**
 	 * 初始化模组入口并完成注册绑定喵~
+	 *
+	 * @param modBus 模组事件总线
+	 * @param modContainer 模组容器
 	 */
-	public InitialHouse() {
-		ModLoadingContext.get().registerConfig(ModConfig.Type.SERVER, IHServerConfig.getConfig());
+	public InitialHouse(IEventBus modBus, ModContainer modContainer) {
+		modContainer.registerConfig(ModConfig.Type.SERVER, IHServerConfig.getConfig());
 
-		IEventBus bus = FMLJavaModLoadingContext.get().getModEventBus();
-		IHContent.modConstruct(bus);
+		IHContent.modConstruct(modBus);
 
-		MinecraftForge.EVENT_BUS.addListener(this::onPlayerRespawn);
-		MinecraftForge.EVENT_BUS.addListener(this::onEntityJoin);
-		MinecraftForge.EVENT_BUS.addListener(this::onOverworldLoad);
-		MinecraftForge.EVENT_BUS.addListener(this::onServerStarted);
-		MinecraftForge.EVENT_BUS.addListener(this::onServerClose);
-		MinecraftForge.EVENT_BUS.register(this);
+		NeoForge.EVENT_BUS.addListener(this::onPlayerRespawn);
+		NeoForge.EVENT_BUS.addListener(this::onEntityJoin);
+		NeoForge.EVENT_BUS.addListener(this::onOverworldLoad);
+		NeoForge.EVENT_BUS.addListener(this::onServerStarted);
+		NeoForge.EVENT_BUS.addListener(this::onServerClose);
 	}
 
 	private static void teleportPlayerToSpawnPoint(ServerPlayer serverPlayer) {
 		BlockPos sharedSpawnPos = serverPlayer.level().getSharedSpawnPos();
 		serverPlayer.teleportTo(
 				sharedSpawnPos.getX() + IHServerConfig.SPAWN_POINT_SHIFT_X.get() + 0.5D,
-				sharedSpawnPos.getY() + IHServerConfig.SPAWN_POINT_SHIFT_Y.get(),
+				sharedSpawnPos.getY() + (double) IHServerConfig.SPAWN_POINT_SHIFT_Y.get(),
 				sharedSpawnPos.getZ() + IHServerConfig.SPAWN_POINT_SHIFT_Z.get() + 0.5D
 		);
 	}
@@ -108,7 +110,10 @@ public class InitialHouse {
 		ServerLevel world = event.getServer().getLevel(Level.OVERWORLD);
 		assert world != null;
 		if (!world.isClientSide) {
-			IHSavedData worldData = world.getDataStorage().computeIfAbsent(IHSavedData::new, IHSavedData::new, IHSavedData.SAVED_DATA_NAME);
+			IHSavedData worldData = world.getDataStorage().computeIfAbsent(
+					new SavedData.Factory<>(IHSavedData::new, IHSavedData::new),
+					IHSavedData.SAVED_DATA_NAME
+			);
 			IHSavedData.setInstance(worldData);
 		}
 	}
@@ -124,8 +129,8 @@ public class InitialHouse {
 			return RespawnAnchorBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos).isPresent();
 		}
 		if (block instanceof BedBlock && BedBlock.canSetSpawn(serverLevel)) {
-			return BedBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos, blockstate.getValue(BedBlock.FACING), 1.0F).isPresent();
+			return BedBlock.findStandUpPosition(EntityType.PLAYER, serverLevel, blockPos, blockstate.getValue(HorizontalDirectionalBlock.FACING), 1.0F).isPresent();
 		}
-		return blockstate.getRespawnPosition(EntityType.PLAYER, serverLevel, blockPos, 1.0F, null).isPresent();
+		return blockstate.getRespawnPosition(EntityType.PLAYER, serverLevel, blockPos, 1.0F).isPresent();
 	}
 }

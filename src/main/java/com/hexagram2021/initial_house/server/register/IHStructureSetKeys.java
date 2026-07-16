@@ -29,7 +29,7 @@ public final class IHStructureSetKeys {
 	 */
 	@SuppressWarnings("SameParameterValue")
 	private static ResourceKey<StructureSet> createKey(String name) {
-		return ResourceKey.create(Registries.STRUCTURE_SET, new ResourceLocation(MODID, name));
+		return ResourceKey.create(Registries.STRUCTURE_SET, ResourceLocation.fromNamespaceAndPath(MODID, name));
 	}
 
 	/**

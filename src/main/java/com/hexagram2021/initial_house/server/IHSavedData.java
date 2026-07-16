@@ -1,6 +1,7 @@
 package com.hexagram2021.initial_house.server;
 
 import com.google.common.collect.Lists;
+import net.minecraft.core.HolderLookup;
 import net.minecraft.nbt.CompoundTag;
 import net.minecraft.nbt.ListTag;
 import net.minecraft.nbt.Tag;
@@ -40,8 +41,9 @@ public class IHSavedData extends SavedData {
 	 * 从 NBT 中恢复持久化数据喵~
 	 *
 	 * @param nbt 持久化标签喵~
+	 * @param ignored 注册表查询器（未使用）
 	 */
-	public IHSavedData(CompoundTag nbt) {
+	public IHSavedData(CompoundTag nbt, HolderLookup.Provider ignored) {
 		this();
 		if(nbt.contains(PLAYERS_KEY, Tag.TAG_LIST)) {
 			ListTag allPlayers = nbt.getList(PLAYERS_KEY, Tag.TAG_COMPOUND);
@@ -59,7 +61,7 @@ public class IHSavedData extends SavedData {
 	 * @return 写入后的标签喵~
 	 */
 	@Override
-	public CompoundTag save(CompoundTag nbt) {
+	public CompoundTag save(CompoundTag nbt, HolderLookup.Provider provider) {
 		ListTag allPlayers = new ListTag();
 		synchronized (this.players) {
 			this.players.forEach(uuid -> {

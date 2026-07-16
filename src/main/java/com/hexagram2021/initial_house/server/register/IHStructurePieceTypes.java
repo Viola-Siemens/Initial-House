@@ -3,9 +3,9 @@ package com.hexagram2021.initial_house.server.register;
 import com.hexagram2021.initial_house.server.world.structures.InitialHouseStructurePieces;
 import net.minecraft.core.registries.Registries;
 import net.minecraft.world.level.levelgen.structure.pieces.StructurePieceType;
-import net.minecraftforge.eventbus.api.IEventBus;
-import net.minecraftforge.registries.DeferredRegister;
-import net.minecraftforge.registries.RegistryObject;
+import net.neoforged.bus.api.IEventBus;
+import net.neoforged.neoforge.registries.DeferredHolder;
+import net.neoforged.neoforge.registries.DeferredRegister;
 
 import static com.hexagram2021.initial_house.InitialHouse.MODID;
 
@@ -19,7 +19,7 @@ public final class IHStructurePieceTypes {
 	/**
 	 * 初始房屋结构片段类型喵~
 	 */
-	public static final RegistryObject<StructurePieceType> INITIAL_HOUSE = REGISTER.register("initial_house", () -> InitialHouseStructurePieces.Piece::new);
+	public static final DeferredHolder<StructurePieceType, StructurePieceType> INITIAL_HOUSE = REGISTER.register("initial_house", () -> InitialHouseStructurePieces.Piece::new);
 
 	private IHStructurePieceTypes() {
 	}
